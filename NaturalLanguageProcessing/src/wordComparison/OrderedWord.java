@@ -1,6 +1,6 @@
 package wordComparison;
 
-public class OrderedWord implements Comparable {
+public class OrderedWord implements Comparable<OrderedWord> {
 	private String word;
 	private double value;
 	
@@ -15,6 +15,12 @@ public class OrderedWord implements Comparable {
 
 	public double getValue() {
 		return value;
+	}
+	
+	@Override
+	public int compareTo(OrderedWord o) {
+		
+		return Double.compare(this.value, o.value);
 	}
 	
 }
