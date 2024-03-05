@@ -3,6 +3,7 @@ package wordComparison;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.Scanner;
 
 public class WordComparison {
 	
+	// private static final int MAP_CAPACITY = 50000;
 	private static final int NUM_COMPARISONS = 50;
 	private static Scanner kb = new Scanner(System.in);
 	
@@ -45,33 +47,26 @@ public class WordComparison {
 	}
 	
 	// Prompts user for word
-	private static String[] getUserWord(Map<String, double[]> map) {
+	private static List<String> getUserWord(Map<String, double[]> map) {
 		
 		System.out.println("Please enter a word or short phrase: ");
 		String userInput;
-		String[] userInputArray;
+		List<String> userInputArray;
 		boolean isAllWordsKeys;
 		
 		
 		do {
 			isAllWordsKeys = true;
 			userInput = kb.nextLine().toLowerCase();
-			userInputArray = userInput.split(" ");
-			
-			/* For testing purposes
-			System.out.println(userInput);
-			for (int i = 0; i < userInputArray.length; i++) {
-				System.out.println(userInputArray[i]);
-			}
-			*/
+			userInputArray = new ArrayList<String>(Arrays.asList(userInput.split(" ")));
 			
 			// Checks if all words in array are in map
-			for (int i = 0; i < userInputArray.length; i++) {
-				if (!map.containsKey(userInputArray[i])) { isAllWordsKeys = false; }
+			for (int i = 0; i < userInputArray.size(); i++) {
+				if (!map.containsKey(userInputArray.get(i))) { isAllWordsKeys = false; }
 			}
 			
 		} while(!isAllWordsKeys);
-		return userInputArray;
+		return (List<String>) userInputArray;
 	}
 	
 	private static int getNumEntries(int size) {
@@ -90,6 +85,7 @@ public class WordComparison {
 	}
 	
 	private static void menu() throws FileNotFoundException {
+		
 		System.out.println("\n-------------- Word Similarity Lookup --------------\n");
 		
 		HashMap<String, double[]> map = new HashMap<>(getWords());
@@ -97,25 +93,28 @@ public class WordComparison {
 		String contin = "";
 		
 		do {
+
 			
 			// Initialize list to order words with respect to closeness
 			List<OrderedWord> topWords = new ArrayList<>();
 			
 			// Prompt for number of entries and words
 			int numEntries = getNumEntries(map.size());
-			String[] userWordArray = getUserWord(map);
+			List<String> userWordArray = new ArrayList<>(getUserWord(map)); 
+			
+			long curTime = System.nanoTime();
 			
 			// Array for the average values of words entered
 			double[] userInputValueArray = new double[50];
 			
-			for (int j = 0; j < userWordArray.length; j++) {
-				double[] wordValueArray = map.get(userWordArray[j]);
-				for (int k = 0; k < NUM_COMPARISONS; k++) {
-					userInputValueArray[k] += wordValueArray[k];
+			for (String userWord : userWordArray) {
+				double[] wordValueArray = map.get(userWord);
+				for (int i = 0; i < NUM_COMPARISONS; i++) {
+					userInputValueArray[i] += wordValueArray[i];
 				}
 			}
-			for (int j = 0; j < NUM_COMPARISONS; j++) {
-				userInputValueArray[j] /= userWordArray.length;
+			for (int i = 0; i < NUM_COMPARISONS; i++) {
+				userInputValueArray[i] /= userWordArray.size();
 			}
 			
 			double currentWordArray[];
@@ -124,7 +123,7 @@ public class WordComparison {
 			
 			for (String word : map.keySet()) {
 				
-				if (!(userWordArray.length == 1 && userWordArray[0].equals(word))) {
+				if (!userWordArray.contains(word)) {
 					currentWordArray = map.get(word);
 					difference = 0;
 					for (int i = 0; i < NUM_COMPARISONS; i++) {
@@ -138,8 +137,13 @@ public class WordComparison {
 			
 			displayTopWords(numEntries, topWords);
 			
+			System.out.println("\nTime taken to compute: " + (System.nanoTime() - curTime) + "ns\n");
+			System.out.println("Time taken to compute (milliseconds): " + (System.nanoTime() - curTime) / 1000000);
+			
 			System.out.println("Do you wish to continue? (Enter \"n\" to exit):\n");
 			contin = kb.next();
+			
+			System.out.println("\n\n");
 			
 		} while (!contin.equalsIgnoreCase("n"));
 	}
