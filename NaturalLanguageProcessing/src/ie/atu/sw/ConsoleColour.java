@@ -1,15 +1,16 @@
-package ie.atu.sw;
-
 /*
- * ANSI escape sequences are a standard for controlling cursor location, colour, 
- * font styling, and other options on DOS, Mac and Linux terminals. The ANSI escape 
+ * ANSI escape sequences are a standard for controlling cursor location, colour,
+ * font styling, and other options on DOS, Mac and Linux terminals. The ANSI escape
  * codes are formatted as follows:
- * 
+ *
  *  	[<PREFIX>];[<COLOR>];[<TEXT DECORATION>]
- *  
+ *
  *  See https://en.wikipedia.org/wiki/ANSI_escape_code for a decent description.
  */
-public enum ConsoleColour { 
+
+package ie.atu.sw;
+
+public enum ConsoleColour {
 	//Reset
     RESET						("Reset",						"0"),
 
@@ -82,28 +83,28 @@ public enum ConsoleColour {
     PURPLE_BACKGROUND_BRIGHT	("Purple [High Intensity BG]", 	"0;105"),
     CYAN_BACKGROUND_BRIGHT		("Cyan [High Intensity BG]", 	"0;106"),
     WHITE_BACKGROUND_BRIGHT		("White [High Intensity BG]", 	"0;107");
-	
+
 	//Control Sequence Introducer. ASCII Octal = \033, ASCII Hex = \0x1B, Shell = \e
-	private static final String CTRL_SEQ_INTRO = "\033[";  
-	private static final String CTRL_SEQ_END = "m"; //Terminates control  
+	private static final String CTRL_SEQ_INTRO = "\033[";
+	private static final String CTRL_SEQ_END = "m"; //Terminates control
 	private final String description;
 	private final String colour;
-	
+
 	ConsoleColour(String description, String colour) {
 		this.description = description;
 		this.colour = colour;
 	}
-	
-	public String description() { 
-		return this.description; 
+
+	public String description() {
+		return this.description;
 	}
 
-	public String colour() { 
+	public String colour() {
 		return toString();
 	}
-	
+
 	@Override
     public String toString() {
-        return CTRL_SEQ_INTRO + this.colour + CTRL_SEQ_END; 
+        return CTRL_SEQ_INTRO + this.colour + CTRL_SEQ_END;
     }
 }
